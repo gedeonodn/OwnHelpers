@@ -16,7 +16,6 @@ namespace sms
 
         public XmlDocument Read()
         {
-            //string hostName = 
             Uri server = new Uri(hostAddress);
 
             // получим куки и токен безопасности
