@@ -9,21 +9,21 @@ namespace sms
 {
     public class Config
     {
+        private string[] args = Environment.GetCommandLineArgs();
         private IConfigurationRoot config;
-        public Config(string[] args)
+        public Config()
         {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             var builder = new ConfigurationBuilder()
                 .AddJsonFile($"appsettings.json", true, true)
                 .AddJsonFile($"appsettings.{env}.json", true, true)
-                .AddCommandLine(args)
                 .AddEnvironmentVariables();
 
             config = builder.Build();
         }
         public string Hostname
         {
-            get => config["modemHostName"]; 
+            get => config["modemHostName"];
         }
         public string MailSubject
         {
@@ -36,6 +36,30 @@ namespace sms
         public string TelegramCommand
         {
             get => config["telegramScript"];
+        }
+        public bool PrintHelp
+        {
+            get => new string[] { "-h", "--help" }.Intersect(args).Any();
+        }
+        public bool UnreadOnly
+        {
+            get => new string[] { "-u", "--unread" }.Intersect(args).Any();
+        }
+        public bool HtmlOutput
+        {
+            get => new string[] { "-w", "--html" }.Intersect(args).Any();
+        }
+        public bool SendEmail
+        {
+            get => new string[] { "-s", "--sendemail" }.Intersect(args).Any();
+        }
+        public bool IsQueit
+        {
+            get => new string[] { "-q", "--queit" }.Intersect(args).Any();
+        }
+        public bool SendTelegram
+        {
+            get => new string[] { "-t", "--telegram" }.Intersect(args).Any();
         }
     }
 }

@@ -5,16 +5,10 @@ namespace sms
 {
     class Program
     {
-        
+        private static Config config = new Config();
         static void Main(string[] args)
         {
-            Config config = new Config(args);
-
-            string hostAddress = config.Hostname;
-            HuaweiParser parser = new HuaweiParser(new HuaweiReader(hostAddress).Read());
-            Smses smses = parser.Parse();
-
-            if(new string[] {"-h", "--help"}.Intersect(args).Any())
+            if(config.PrintHelp)
             {
                 Console.WriteLine("Utility for read sms from remote huawei modem.");
                 Console.WriteLine("Usage:");
@@ -28,14 +22,22 @@ namespace sms
                 return;
             }
 
-            if(new string[] {"-u", "--unread"}.Intersect(args).Any())
+            ReadSms();
+        }
+
+        private static void ReadSms()
+        {
+            HuaweiParser parser = new HuaweiParser(new HuaweiReader(config.Hostname).Read());
+            Smses smses = parser.Parse();
+
+            if (config.UnreadOnly)
             {
                 smses.ClearRead();
             }
 
             string result;
 
-            if(new string[] {"-w", "--html"}.Intersect(args).Any())
+            if (config.HtmlOutput)
             {
                 result = smses.HtmlReport;
             }
@@ -44,28 +46,28 @@ namespace sms
                 result = smses.TxtReport;
             }
 
-            if(new string[] {"-s", "--sendemail"}.Intersect(args).Any())
+            if (config.SendEmail)
             {
-                if (smses.Count == 0) 
+                if (smses.Count == 0)
                 {
-                    if(!new string[] {"-q", "--queit"}.Intersect(args).Any())
+                    if (!config.IsQueit)
                     {
                         Console.WriteLine("There is no sms... exit");
                     }
                     return;
                 }
-                
+
 
                 string mailScript = config.MailCommand;
                 string mailSubj = "\"" + config.MailSubject + "\"";
                 string mailText = "\"" + result + "\"";
                 new Bash(mailScript, $"{mailSubj} {mailText}").Execute();
             }
-            else if(new string[] {"-t", "--telegram"}.Intersect(args).Any())
+            else if (config.SendTelegram)
             {
-                if (smses.Count == 0) 
+                if (smses.Count == 0)
                 {
-                    if(!new string[] {"-q", "--queit"}.Intersect(args).Any())
+                    if (!config.IsQueit)
                     {
                         Console.WriteLine("There is no sms... exit");
                     }
