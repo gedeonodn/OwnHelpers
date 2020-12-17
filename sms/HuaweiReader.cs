@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace sms
@@ -18,29 +17,14 @@ namespace sms
         {
             Uri server = new Uri(hostAddress);
 
-            // получим куки и токен безопасности
-            CookieContainer container = new CookieContainer();
-            HttpWebRequest getInboxRequest = WebRequest.Create(new Uri(server, "html/smsinbox.html")) as HttpWebRequest;
-            getInboxRequest.CookieContainer = container;
-            MatchCollection tokens;
-            using(HttpWebResponse getInboxResponse = getInboxRequest.GetResponse() as HttpWebResponse)
-            {
-                using (var reader = new System.IO.StreamReader(getInboxResponse.GetResponseStream()))
-                {
-                    string responseText = reader.ReadToEnd();
-                    string pattern = "(?<=<meta name=\\\"csrf_token\\\" content=\\\").*?(?=\\\"\\/>\\r\\n)";
-                    Regex tokenRegex = new Regex(pattern);
-                    tokens = tokenRegex.Matches(responseText);
-                }
-            }
+            HuaweiAuthorizer authorizer = new HuaweiAuthorizer(hostAddress);
+            AuthParams authParams = authorizer.Authorize();
 
             // получим список смс
             HttpWebRequest smsRequest = WebRequest.Create(new Uri(server, "api/sms/sms-list")) as HttpWebRequest;
-            smsRequest.CookieContainer = container;
-            foreach(var token in tokens)
-            {
-                smsRequest.Headers.Add("__RequestVerificationToken", token.ToString());
-            }
+            smsRequest.CookieContainer = authParams.Container;
+            smsRequest.Headers.Add("__RequestVerificationToken", authParams.CsrfToken);
+
             smsRequest.Method = "POST";
             using(Stream dataStream = smsRequest.GetRequestStream())
             {

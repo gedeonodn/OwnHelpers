@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "sms": {
+      "commandName": "Project",
+      "commandLineArgs": "-d=40000"
+    }
+  }
+}

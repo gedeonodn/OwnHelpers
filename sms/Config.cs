@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace sms
 {
@@ -57,6 +58,26 @@ namespace sms
         public bool SendTelegram
         {
             get => new string[] { "-t", "--telegram" }.Intersect(args).Any();
+        }
+        public int DeleteIndex
+        {
+            get
+            {
+                string delParam = args
+                    .Where(p => new Regex("-d=").IsMatch(p) || new Regex("--delete=").IsMatch(p))
+                    .FirstOrDefault()?
+                    .Split('=')
+                    .ElementAt(1)
+                    .Trim();
+                if (string.IsNullOrWhiteSpace(delParam))
+                {
+                    return 0;
+                }
+                else
+                {
+                    return Convert.ToInt32(delParam);
+                }
+            }
         }
     }
 }
