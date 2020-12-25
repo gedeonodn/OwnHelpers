@@ -13,13 +13,14 @@ namespace sms
                 Console.WriteLine("Utility for read sms from remote huawei modem.");
                 Console.WriteLine("Usage:");
                 Console.WriteLine();
-                Console.WriteLine("-h,\t\t--help\t\tShow this help");
-                Console.WriteLine("-u,\t\t--unread\tShow (send) only unread sms");
-                Console.WriteLine("-w,\t\t--html\t\tOutput in html format");
-                Console.WriteLine("-s,\t\t--sendemail\tSend report to email");
-                Console.WriteLine("-t,\t\t--telegram\tSend report to telegram");
-                Console.WriteLine("-q,\t\t--queit\t\tQueit mode (no additional info in command line)");
-                Console.WriteLine("-d=index,\t--delete=index\tDelete sms with index");
+                Console.WriteLine("-h,\t\t\t--help\t\t\t\tShow this help");
+                Console.WriteLine("-u,\t\t\t--unread\t\t\tShow (send) only unread sms");
+                Console.WriteLine("-w,\t\t\t--html\t\t\t\tOutput in html format");
+                Console.WriteLine("-s,\t\t\t--sendemail\t\t\tSend report to email");
+                Console.WriteLine("-t,\t\t\t--telegram\t\t\tSend report to telegram");
+                Console.WriteLine("-q,\t\t\t--queit\t\t\t\tQueit mode (no additional info in command line)");
+                Console.WriteLine("-d=index,\t\t--delete=index\t\t\tDelete sms with index");
+                Console.WriteLine("-c=\"phone some text\",\t--create=\"phone some text\"\tSend sms with some text to phone");
                 return;
             }
 
@@ -33,6 +34,20 @@ namespace sms
                 else
                 {
                     Console.WriteLine($"Delete sms with index={config.DeleteIndex} failed");
+                }
+                return;
+            }
+
+            if (config.SendSms != null)
+            {
+                HuaweiSender sender = new HuaweiSender(config.Hostname);
+                if (sender.Send(config.SendSms))
+                {
+                    Console.WriteLine($"Send sms to number={config.SendSms.Phone} succesfull");
+                }
+                else
+                {
+                    Console.WriteLine($"Send sms to number={config.SendSms.Phone} failed");
                 }
                 return;
             }

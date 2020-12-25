@@ -79,5 +79,28 @@ namespace sms
                 }
             }
         }
+
+        public Sms SendSms
+        { 
+            get
+            {
+                string sendParam = args
+                    .Where(p => new Regex("-c=").IsMatch(p) || new Regex("--create=").IsMatch(p))
+                    .FirstOrDefault()?
+                    .Split('=')
+                    .ElementAt(1)
+                    .Trim();
+                if (string.IsNullOrWhiteSpace(sendParam))
+                {
+                    return null;
+                }
+                else
+                {
+                    string phone = sendParam.Split(' ').ElementAt(0);
+                    string text = sendParam.Remove(0, sendParam.IndexOf(' ') + 1);
+                    return new Sms() { Phone = phone, Message = text };
+                }
+            }
+        }
     }
 }

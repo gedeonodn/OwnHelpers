@@ -4,8 +4,8 @@ namespace sms
 {
     public class Sms
     {
-        public string Phone {get;}
-        public string Message {get;}
+        public string Phone { get; set; }
+        public string Message { get; set; }
         public int Id {get;}
         public DateTime SmsDateTime {get;}
         public int Smstat{get;}
@@ -14,6 +14,7 @@ namespace sms
         public int Priority{get;}
         public int SmsType{get;}
 
+        public Sms() { }
 
         public Sms(int id, string phone, string message, DateTime smsDateTime, int smstat, string sca, int saveType, int priority, int smsType)
         {

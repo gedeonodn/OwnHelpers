@@ -2,7 +2,7 @@
   "profiles": {
     "sms": {
       "commandName": "Project",
-      "commandLineArgs": "-d=40000"
+      "commandLineArgs": "-c=\"+380958850305 test text\""
     }
   }
 }
